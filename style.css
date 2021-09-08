@@ -1,0 +1,83 @@
+body {
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@-moz-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#container {
+  width: 100%;
+  min-height: 100vh;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#gridContainer {
+  display: grid;
+  justify-items: center;
+}
+
+.gridItem {
+  display: flex;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  background-color: grey;
+  outline: 1px solid black;
+  text-align: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+img {
+  width: 30px;
+  /* mix-blend-mode: multiply; */
+  animation: fadeIn ease 10s;
+}
