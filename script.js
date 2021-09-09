@@ -77,7 +77,6 @@ findCleanerPos = () => {
 };
 
 getPosId = (pos) => {
-  console.log(pos);
   id = undefined;
   counter = 0;
   x = 0;
@@ -151,14 +150,92 @@ lookUp = (pos) => {
   }
 };
 
-startCleaning = () => {
-  pos = findCleanerPos();
-  setTimeout(lookUp(pos));
-  hasDirt = lookForDirt();
-
-  console.log(pos);
+getAllDirt = () => {
+  dirt = [];
+  let x = 0;
+  array.forEach((line) => {
+    let y = 0;
+    line.forEach((item) => {
+      if (item == "o") dirt.push({ x: x, y: y });
+      y++;
+    });
+    x++;
+  });
+  return dirt;
 };
 
+moveRandom = (pos) => {
+  random = Math.floor(Math.random() * 4);
+  random++;
+  console.log(random);
+  cleaner_at = pos;
+  if (random == 1 && cleaner_at.x - 1 >= 0) {
+    cleaner_at = { x: cleaner_at.x - 1, y: cleaner_at.y };
+  } else if (random == 2 && cleaner_at.x + 1 < array.length) {
+    cleaner_at = { x: cleaner_at.x + 1, y: cleaner_at.y };
+  } else if (random == 3 && cleaner_at.y - 1 >= 0) {
+    cleaner_at = { x: cleaner_at.x, y: cleaner_at.y - 1 };
+  } else if (random == 4 && cleaner_at.y + 1 < array[0].length) {
+    cleaner_at = { x: cleaner_at.x, y: cleaner_at.y + 1 };
+  }
+
+  return cleaner_at;
+};
+
+lookAround = (pos, dirt) => {
+  if (dirt.x == pos.x + 1) {
+    if (dirt.y == pos.y + 1) return dirt;
+    if (dirt.y == pos.y) return dirt;
+    if (dirt.y == pos.y - 1) return dirt;
+  } else if (dirt.x == pos.x - 1) {
+    if (dirt.y == pos.y + 1) return dirt;
+    if (dirt.y == pos.y) return dirt;
+    if (dirt.y == pos.y - 1) return dirt;
+  } else {
+    return false;
+  }
+};
+
+getPath = async () => {
+  cleaner_at = findCleanerPos();
+  console.log("at", cleaner_at);
+  while (dirts.length) {
+    dirts.forEach((dirt, index) => {
+      console.log("cleaner", cleaner_at);
+      console.log("dirt", dirt);
+      if (lookAround(cleaner_at, dirt)) {
+        console.log("in");
+        path.push(dirt);
+        id = getPosId(dirt);
+        cleaner.position = id;
+        dirts.splice(index, 1);
+        cleaner_at = findCleanerPos();
+        return;
+      }
+    });
+    if (dirts.length) {
+      pos = moveRandom(cleaner_at);
+      // while (!pos) {
+      // pos = moveRandom(cleaner_at);
+      // console.log(pos);
+      // }
+      cleaner_at = pos;
+
+      cleaner.position = getPosId(pos);
+      path.push(cleaner_at);
+    }
+  }
+
+  console.log("path", path);
+  console.log();
+};
+
+startCleaning = () => {
+  x = 0;
+  getPath();
+  x++;
+  hasDirt = lookForDirt();
+};
 containerHtml = document.getElementById("container");
 gridContainer = document.getElementById("gridContainer");
 
@@ -173,12 +250,13 @@ arraySize = {
   width: array.length,
   height: array[0].length,
 };
-
+dirts = getAllDirt();
 cleaner = {
   placed: false,
   position: "",
 };
 
+path = [];
 hasDirt = true;
 createGrid();
 
