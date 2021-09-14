@@ -21,9 +21,7 @@ placeCleaner = (id) => {
   let img = document.createElement("img");
   img.src = "./cleaner.png";
   grid_item.appendChild(img);
-  path.push(findCleanerPos())
   cleaner.position = id;
-  console.log(cleaner.position);
   cleaner.placed = true;
 };
 
@@ -183,7 +181,11 @@ getAllDirt = () => {
 moveRandom = (pos) => {
   cleaner_at = pos;
   invalid = true;
+  console.log(path);
+  lastPos = path[path.length - 2]
+  console.log(lastPos);
   while (invalid) {
+    console.log(cleaner_at == lastPos);
     random = Math.floor(Math.random() * 4);
     random++;
     if (random == 1 && cleaner_at.x - 1 >= 0) {
@@ -235,7 +237,6 @@ getPath = () => {
     if (dirts.length) {
       pos = moveRandom(cleaner_at);
       cleaner_at = pos;
-
       path.push(cleaner_at);
     }
   }
@@ -267,16 +268,24 @@ startMoving = () => {
 startCleaning = () => {
   console.log(cleaner.position);
   getPath();
+  showData();
   startMoving();
 };
+
+showData = () => {
+  document.getElementById('movimentos').innerHTML = `Movimentos: ${path.length}`
+}
 containerHtml = document.getElementById("container");
 gridContainer = document.getElementById("gridContainer");
 
+lastPos = {}
+
 array = [
-  ["x", "x", "x", "o"],
-  ["x", "o", "x", "x"],
-  ["o", "x", "o", "o"],
-  ["x", "o", "o", "x"],
+  ["x", "x", "x", "o","x"],
+  ["x", "o", "x", "x", 'o'],
+  ["o", "x", "o", "o", "x"],
+  ["x", "o", "o", "x", "o"],
+  ["o", "x", "x", "o", "x"],
 ];
 
 arraySize = {

@@ -49,6 +49,17 @@ body {
   }
 }
 
+button {
+  background-color: rgb(126 70 48);
+  color: white;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  width: 180px;
+  height: 35px;
+  border-radius: 15px;
+}
+
 #container {
   width: 100%;
   min-height: 100vh;
