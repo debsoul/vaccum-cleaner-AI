@@ -69,8 +69,10 @@ body {
   align-items: center;
   width: 80px;
   height: 80px;
-  background-color: grey;
-  outline: 1px solid black;
+  background-image: url("./floor.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* outline: 1px solid black; */
   text-align: center;
   justify-content: center;
   cursor: pointer;
