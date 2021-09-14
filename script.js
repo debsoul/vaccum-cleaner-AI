@@ -182,7 +182,7 @@ moveRandom = (pos) => {
   cleaner_at = pos;
   invalid = true;
   console.log(path);
-  lastPos = path[path.length - 2]
+  lastPos = path[path.length - 2];
   console.log(lastPos);
   while (invalid) {
     console.log(cleaner_at == lastPos);
@@ -221,12 +221,14 @@ lookAround = (pos, dirt) => {
 };
 
 getPath = () => {
+  dirts = startingDirts;
+  let temp_path = [];
   let aux = dirts;
   cleaner_at = findCleanerPos();
   while (dirts.length) {
     dirts.forEach((dirt, index) => {
       if (lookAround(cleaner_at, dirt)) {
-        path.push(dirt);
+        temp_path.push(dirt);
         id = getPosId(dirt);
         aux.splice(index, 1);
         cleaner_at = findPosById(id);
@@ -237,15 +239,19 @@ getPath = () => {
     if (dirts.length) {
       pos = moveRandom(cleaner_at);
       cleaner_at = pos;
-      path.push(cleaner_at);
+      temp_path.push(cleaner_at);
     }
   }
 
-  console.log("path", path);
+  if (!path.length) {
+    path = temp_path;
+  } else {
+    if (temp_path.length < path.length) path = temp_path;
+  }
 };
 
 move = (pos) => {
-  console.log('cleaner',cleaner.position);
+  console.log("cleaner", cleaner.position);
   cleaner = document.getElementById(cleaner.position);
   cleaner.removeChild(cleaner.firstChild);
   id = getPosId(pos);
@@ -265,24 +271,41 @@ startMoving = () => {
   });
 };
 
-startCleaning = () => {
-  console.log(cleaner.position);
+getPaths = async () => {
   getPath();
-  showData();
-  startMoving();
+  getPath();
+  getPath();
+  getPath();
+  getPath();
+  getPath();
+  getPath();
+  getPath();
+  getPath();
+  console.log("end");
+  return;
+};
+
+startCleaning = async () => {
+  console.log(cleaner.position);
+  await getPaths().then(() => {
+    showData();
+    startMoving();
+  });
 };
 
 showData = () => {
-  document.getElementById('movimentos').innerHTML = `Movimentos: ${path.length}`
-}
+  document.getElementById(
+    "movimentos"
+  ).innerHTML = `Movimentos: ${path.length}`;
+};
 containerHtml = document.getElementById("container");
 gridContainer = document.getElementById("gridContainer");
 
-lastPos = {}
+lastPos = {};
 
 array = [
-  ["x", "x", "x", "o","x"],
-  ["x", "o", "x", "x", 'o'],
+  ["x", "x", "x", "o", "x"],
+  ["x", "o", "x", "x", "o"],
   ["o", "x", "o", "o", "x"],
   ["x", "o", "o", "x", "o"],
   ["o", "x", "x", "o", "x"],
@@ -292,7 +315,8 @@ arraySize = {
   width: array.length,
   height: array[0].length,
 };
-dirts = getAllDirt();
+const startingDirts = getAllDirt();
+dirts = startingDirts;
 cleaner = {
   placed: false,
   position: "",
