@@ -21,7 +21,9 @@ placeCleaner = (id) => {
   let img = document.createElement("img");
   img.src = "./cleaner.png";
   grid_item.appendChild(img);
+  path.push(findCleanerPos())
   cleaner.position = id;
+  console.log(cleaner.position);
   cleaner.placed = true;
 };
 
@@ -77,6 +79,28 @@ findCleanerPos = () => {
   return pos;
 };
 
+findPosById = (id) => {
+  pos = {};
+  counter = 0;
+  x = 0;
+  array.forEach((line) => {
+    y = 0;
+    line.forEach((item) => {
+      if (counter == id) {
+        pos = {
+          x: x,
+          y: y,
+        };
+      }
+      y++;
+      counter++;
+    });
+    x++;
+  });
+
+  return pos;
+};
+
 getPosId = (pos) => {
   id = undefined;
   counter = 0;
@@ -92,20 +116,6 @@ getPosId = (pos) => {
   });
 
   return id;
-};
-
-move = (pos) => {
-  console.log(cleaner.position);
-  cleaner = document.getElementById(cleaner.position);
-  cleaner.removeChild(cleaner.firstChild);
-  id = getPosId(pos);
-  let img = document.createElement("img");
-  img.src = "./cleaner.png";
-  let gridItem = document.getElementById(id);
-
-  if (gridItem.childNodes.length) gridItem.removeChild(gridItem.firstChild);
-  gridItem.appendChild(img);
-  cleaner.position = id;
 };
 
 clean = (pos) => {
@@ -212,14 +222,12 @@ getPath = () => {
   let aux = dirts;
   cleaner_at = findCleanerPos();
   while (dirts.length) {
-    console.log(dirts.length);
     dirts.forEach((dirt, index) => {
       if (lookAround(cleaner_at, dirt)) {
         path.push(dirt);
         id = getPosId(dirt);
-        cleaner.position = id;
         aux.splice(index, 1);
-        cleaner_at = findCleanerPos();
+        cleaner_at = findPosById(id);
         return;
       }
     });
@@ -228,12 +236,25 @@ getPath = () => {
       pos = moveRandom(cleaner_at);
       cleaner_at = pos;
 
-      cleaner.position = getPosId(pos);
       path.push(cleaner_at);
     }
   }
 
   console.log("path", path);
+};
+
+move = (pos) => {
+  console.log('cleaner',cleaner.position);
+  cleaner = document.getElementById(cleaner.position);
+  cleaner.removeChild(cleaner.firstChild);
+  id = getPosId(pos);
+  let img = document.createElement("img");
+  img.src = "./cleaner.png";
+  let gridItem = document.getElementById(id);
+
+  if (gridItem.childNodes.length) gridItem.removeChild(gridItem.firstChild);
+  gridItem.appendChild(img);
+  cleaner.position = id;
 };
 
 startMoving = () => {
@@ -244,6 +265,7 @@ startMoving = () => {
 };
 
 startCleaning = () => {
+  console.log(cleaner.position);
   getPath();
   startMoving();
 };
