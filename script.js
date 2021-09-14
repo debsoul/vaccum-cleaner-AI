@@ -4,7 +4,6 @@ createHeight = () => {
   for (let x = 0; x < arraySize.height; x++) {
     stringHeight += "1fr ";
   }
-  console.log(stringHeight);
   gridContainer.style.gridTemplateColumns = stringHeight;
 };
 
@@ -13,14 +12,15 @@ createWidth = () => {
   for (let x = 0; x < arraySize.width; x++) {
     stringWidth += "1fr ";
   }
-  console.log(stringWidth);
   gridContainer.style.gridTemplateRows = stringWidth;
 };
 
 placeCleaner = (id) => {
   let grid_item = document.getElementById(id);
   if (cleaner.placed) return;
-  grid_item.innerHTML = "X";
+  let img = document.createElement("img");
+  img.src = "./cleaner.png";
+  grid_item.appendChild(img);
   cleaner.position = id;
   cleaner.placed = true;
 };
@@ -29,14 +29,15 @@ createGrid = () => {
   let counter = 0;
   array.forEach((line) => {
     line.forEach((item) => {
-      console.log("aa");
       gridHtml = document.createElement("div");
       gridHtml.setAttribute("id", counter);
       gridHtml.setAttribute("class", "gridItem");
       gridHtml.setAttribute("onclick", "placeCleaner(event.target.id)");
       dirt = document.createElement("img");
-      if (item == "o") dirt.src = "./dirt.png";
-      gridHtml.appendChild(dirt);
+      if (item == "o") {
+        dirt.src = "./dirt.png";
+        gridHtml.appendChild(dirt);
+      }
       gridContainer.appendChild(gridHtml);
       counter++;
     });
@@ -94,11 +95,16 @@ getPosId = (pos) => {
 };
 
 move = (pos) => {
-  id = getPosId(pos);
-  gridItem = document.getElementById(id);
-  gridItem.innerHTML = "X";
+  console.log(cleaner.position);
   cleaner = document.getElementById(cleaner.position);
-  cleaner.innerHTML = "";
+  cleaner.removeChild(cleaner.firstChild);
+  id = getPosId(pos);
+  let img = document.createElement("img");
+  img.src = "./cleaner.png";
+  let gridItem = document.getElementById(id);
+
+  if (gridItem.childNodes.length) gridItem.removeChild(gridItem.firstChild);
+  gridItem.appendChild(img);
   cleaner.position = id;
 };
 
@@ -165,18 +171,24 @@ getAllDirt = () => {
 };
 
 moveRandom = (pos) => {
-  random = Math.floor(Math.random() * 4);
-  random++;
-  console.log(random);
   cleaner_at = pos;
-  if (random == 1 && cleaner_at.x - 1 >= 0) {
-    cleaner_at = { x: cleaner_at.x - 1, y: cleaner_at.y };
-  } else if (random == 2 && cleaner_at.x + 1 < array.length) {
-    cleaner_at = { x: cleaner_at.x + 1, y: cleaner_at.y };
-  } else if (random == 3 && cleaner_at.y - 1 >= 0) {
-    cleaner_at = { x: cleaner_at.x, y: cleaner_at.y - 1 };
-  } else if (random == 4 && cleaner_at.y + 1 < array[0].length) {
-    cleaner_at = { x: cleaner_at.x, y: cleaner_at.y + 1 };
+  invalid = true;
+  while (invalid) {
+    random = Math.floor(Math.random() * 4);
+    random++;
+    if (random == 1 && cleaner_at.x - 1 >= 0) {
+      cleaner_at = { x: cleaner_at.x - 1, y: cleaner_at.y };
+      invalid = false;
+    } else if (random == 2 && cleaner_at.x + 1 < array.length) {
+      cleaner_at = { x: cleaner_at.x + 1, y: cleaner_at.y };
+      invalid = false;
+    } else if (random == 3 && cleaner_at.y - 1 >= 0) {
+      cleaner_at = { x: cleaner_at.x, y: cleaner_at.y - 1 };
+      invalid = false;
+    } else if (random == 4 && cleaner_at.y + 1 < array[0].length) {
+      cleaner_at = { x: cleaner_at.x, y: cleaner_at.y + 1 };
+      invalid = false;
+    }
   }
 
   return cleaner_at;
@@ -196,29 +208,24 @@ lookAround = (pos, dirt) => {
   }
 };
 
-getPath = async () => {
+getPath = () => {
+  let aux = dirts;
   cleaner_at = findCleanerPos();
-  console.log("at", cleaner_at);
   while (dirts.length) {
+    console.log(dirts.length);
     dirts.forEach((dirt, index) => {
-      console.log("cleaner", cleaner_at);
-      console.log("dirt", dirt);
       if (lookAround(cleaner_at, dirt)) {
-        console.log("in");
         path.push(dirt);
         id = getPosId(dirt);
         cleaner.position = id;
-        dirts.splice(index, 1);
+        aux.splice(index, 1);
         cleaner_at = findCleanerPos();
         return;
       }
     });
+    dirts = aux;
     if (dirts.length) {
       pos = moveRandom(cleaner_at);
-      // while (!pos) {
-      // pos = moveRandom(cleaner_at);
-      // console.log(pos);
-      // }
       cleaner_at = pos;
 
       cleaner.position = getPosId(pos);
@@ -227,14 +234,18 @@ getPath = async () => {
   }
 
   console.log("path", path);
-  console.log();
+};
+
+startMoving = () => {
+  console.log(path);
+  path.forEach((p, index) => {
+    setTimeout(() => move(p), 1000 * index);
+  });
 };
 
 startCleaning = () => {
-  x = 0;
   getPath();
-  x++;
-  hasDirt = lookForDirt();
+  startMoving();
 };
 containerHtml = document.getElementById("container");
 gridContainer = document.getElementById("gridContainer");
@@ -263,6 +274,5 @@ createGrid();
 createHeight();
 createWidth();
 
-console.log(gridContainer.children.length);
 // gridHtml = document.createElement("div");
 // gridHtml.class = "grid_item";
