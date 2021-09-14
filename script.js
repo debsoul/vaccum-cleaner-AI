@@ -1,5 +1,4 @@
 createHeight = () => {
-  console.log("a");
   stringHeight = "";
   for (let x = 0; x < arraySize.height; x++) {
     stringHeight += "1fr ";
@@ -181,11 +180,8 @@ getAllDirt = () => {
 moveRandom = (pos) => {
   cleaner_at = pos;
   invalid = true;
-  console.log(path);
   lastPos = path[path.length - 2];
-  console.log(lastPos);
   while (invalid) {
-    console.log(cleaner_at == lastPos);
     random = Math.floor(Math.random() * 4);
     random++;
     if (random == 1 && cleaner_at.x - 1 >= 0) {
@@ -221,7 +217,6 @@ lookAround = (pos, dirt) => {
 };
 
 getPath = () => {
-  dirts = startingDirts;
   let temp_path = [];
   let aux = dirts;
   cleaner_at = findCleanerPos();
@@ -243,15 +238,17 @@ getPath = () => {
     }
   }
 
+
   if (!path.length) {
     path = temp_path;
   } else {
     if (temp_path.length < path.length) path = temp_path;
   }
+
+  dirts = startingDirts.slice()
 };
 
 move = (pos) => {
-  console.log("cleaner", cleaner.position);
   cleaner = document.getElementById(cleaner.position);
   cleaner.removeChild(cleaner.firstChild);
   id = getPosId(pos);
@@ -265,32 +262,36 @@ move = (pos) => {
 };
 
 startMoving = () => {
-  console.log(path);
   path.forEach((p, index) => {
     setTimeout(() => move(p), 1000 * index);
   });
 };
 
 getPaths = async () => {
-  getPath();
-  getPath();
-  getPath();
-  getPath();
-  getPath();
-  getPath();
-  getPath();
-  getPath();
-  getPath();
-  console.log("end");
+  await Promise.all([
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+    getPath(),
+  ])
   return;
 };
 
 startCleaning = async () => {
-  console.log(cleaner.position);
-  await getPaths().then(() => {
-    showData();
-    startMoving();
-  });
+  await getPaths();
+  showData();
+  startMoving();
 };
 
 showData = () => {
@@ -298,6 +299,7 @@ showData = () => {
     "movimentos"
   ).innerHTML = `Movimentos: ${path.length}`;
 };
+
 containerHtml = document.getElementById("container");
 gridContainer = document.getElementById("gridContainer");
 
@@ -316,7 +318,7 @@ arraySize = {
   height: array[0].length,
 };
 const startingDirts = getAllDirt();
-dirts = startingDirts;
+var dirts = startingDirts.slice()
 cleaner = {
   placed: false,
   position: "",
